@@ -1,0 +1,242 @@
+openapi: '3.0.0'
+info:
+  version: '1.0.0'
+  title: 'Demo Quiz'
+  description: REST API that serves the resources for the famous quotes quizz
+
+paths:
+  /famous-quotes:
+    get:
+      summary: Reads a famousQuote
+      responses:
+        '200':
+          description: The famousQuote corresponding to the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamousQuote'
+        404:
+          description: No famousQuote found for the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:   
+      requestBody: {
+        required: true,
+        content: {
+          data: {
+            example: {
+              author: "Charles Baudelaire",
+              publishedIn: "Les fleurs du mal",
+              text: "La nature est un temple où de vivants piliers laissent parfois sortir de confuses paroles",
+              year: "1857"
+            },
+            schema: {
+              $ref: '#/components/schemas/FamousQuoteParams'
+            }
+          },
+        }
+      }
+      summary: Creates a famousQuote
+      responses:
+        '201':
+          description: The famousQuote corresponding to the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamousQuote'
+        401:
+          description: The apiKey is missing or not recognized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'                
+        404:
+          description: No famousQuote found for the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /famous-quotes/{id}:
+    parameters:
+      - name: id
+        description: The unique identifier of the spacecraft
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/FamousQuoteId'
+    delete:
+      summary: Deletes a famousQuote
+      responses:
+        '200':
+          description: The deleted famousQuote corresponding to the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamousQuote'
+        401:
+          description: The apiKey is missing or not recognized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'                
+        404:
+          description: No famousQuote found for the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: Reads a famousQuote
+      responses:
+        '200':
+          description: The famousQuote corresponding to the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamousQuote'
+        404:
+          description: No famousQuote found for the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:   
+      requestBody: {
+        required: true,
+        content: {
+          data: {
+            example: {
+              author: "Charles Baudelaire",
+              publishedIn: "Les fleurs du mal",
+              text: "La nature est un temple où de vivants piliers laissent parfois sortir de confuses paroles",
+              year: "1857"
+            },
+            schema: {
+              $ref: '#/components/schemas/FamousQuoteParams'
+            }
+          },
+        }
+      }
+      summary: Updates a famousQuote
+      responses:
+        '200':
+          description: The famousQuote corresponding to the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamousQuote'
+        401:
+          description: The apiKey is missing or not recognized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'                
+        404:
+          description: No famousQuote found for the provided `id`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Date: 
+      description: Standard UTC date format (without time)
+      type: string      
+    DateTime: 
+      description: Standard UTC date-time format
+      type: string            
+    FamousQuoteId:
+      description: The unique identifier of a FamousQuote
+      type: string
+    FamousQuoteParams:
+      type: object
+      required:
+        - author
+        - text
+      properties:
+        author:
+          type: string
+        publishedIn:
+          type: string          
+        text:
+          type: string      
+        year:
+          $ref: '#/components/schemas/Year'      
+    FamousQuote:
+      type: object
+      required:
+        - author
+        - createdAt
+        - id
+        - text
+        - updatedAt
+      properties:
+        author:
+          type: string
+        createdAt:
+          $ref: '#/components/schemas/DateTime'
+        id:
+          $ref: '#/components/schemas/FamousQuoteId'
+        publishedIn:
+          type: string          
+        text:
+          type: string      
+        updatedAt:
+          $ref: '#/components/schemas/DateTime'
+        year:
+          $ref: '#/components/schemas/Year'
+    Year: 
+      description: Integer between -10000 and 2050
+      type: integer          
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code: 
+          type: integer
+          enum: [401, 404, 500]
+        message:
+          description: A human readable error message
+          type: string
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+security:
+  - ApiKey: []
