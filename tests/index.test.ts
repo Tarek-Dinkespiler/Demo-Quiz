@@ -1,31 +1,18 @@
-import { add, formatDisplay } from "../src";
+import { handler } from "../src/lambda";
 
-describe("add", () => {
-  describe("with a = 1 and b = 2", () => {
-    it("returns 3", () => {
-      expect(add(1, 2)).toBe(3);
-    });
-  });
-});
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const request = require("supertest");
 
-describe("formatDisplay", () => {
-  describe("when the input is a string", () => {
-    it("returns the string formatted with additionnal line breaks before and after", () => {
-      expect(formatDisplay("Hello!")).toBe("\n\n\n\n\nHello!\n\n\n\n\n");
-    });
-  });
+describe("handler", () => {
+  it("should return a statusCode 200", async () => {
+    const app = await handler({});
 
-  describe("when the input is a stringified object", () => {
-    it("returns a string containing the object as a string and formatted with additionnal line breaks before and after", () => {
-      expect(formatDisplay(JSON.stringify({ sum: 3 }))).toBe(
-        `\n\n\n\n\n{"sum":3}\n\n\n\n\n`,
-      );
-    });
-  });
-
-  describe("when the input is a number", () => {
-    it("returns a string containing the interpolated number and formatted with additionnal line breaks before and after", () => {
-      expect(formatDisplay(3)).toBe("\n\n\n\n\n3\n\n\n\n\n");
-    });
+    request(app)
+      .get("/")
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .end((err: unknown) => {
+        if (err) throw err;
+      });
   });
 });
